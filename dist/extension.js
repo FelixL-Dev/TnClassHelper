@@ -16,15 +16,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.classNames = void 0;
 const fs = __webpack_require__(3);
 const path = __webpack_require__(4);
-const cssFilePath = path.join(__dirname, '../src/TnClassName.css');
-const cssContent = fs.readFileSync(cssFilePath, 'utf8');
-const classNameRegex = /\.([\w-]+)\s*\{/g;
+const vscode_1 = __webpack_require__(1);
+const rootPath = vscode_1.workspace.workspaceFolders ? vscode_1.workspace.workspaceFolders[0].uri.fsPath : '';
+const cssFilePath = path.join(rootPath, 'node_modules', '@tuniao', 'tn-style', 'dist', 'index.css');
 let classNames = [];
 exports.classNames = classNames;
-let match;
-while ((match = classNameRegex.exec(cssContent)) !== null) {
-    classNames.push(match[1]);
-}
+fs.readFile(cssFilePath, 'utf-8', (err, data) => {
+    if (!data) {
+        return;
+    }
+    const cssContent = data;
+    const classNameRegex = /\.([\w-]+)\s*\{/g;
+    let match;
+    while ((match = classNameRegex.exec(cssContent)) !== null) {
+        classNames.push(match[1]);
+    }
+});
 
 
 /***/ }),
@@ -76,21 +83,29 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.activate = void 0;
 const vscode_1 = __webpack_require__(1);
 const TnClassName_1 = __webpack_require__(2);
+const fs = __webpack_require__(3);
+const path = __webpack_require__(4);
 function activate(context) {
-    // 注册补全项提供器
-    const htmlCompletionProvider = vscode_1.languages.registerCompletionItemProvider([{
-            language: 'pug', scheme: 'file'
-        }, {
-            language: 'jade', scheme: 'file'
-        }, {
-            language: 'vue', scheme: 'file',
-        }, {
-            language: 'html', scheme: 'file'
-        }], new ClassNameCompletionProvider(), '', ' ', ':', '<', '"', "'", '=');
-    context.subscriptions.push(htmlCompletionProvider);
+    const rootPath = vscode_1.workspace.workspaceFolders ? vscode_1.workspace.workspaceFolders[0].uri.fsPath : '';
+    const dependencyPath = path.join(rootPath, 'node_modules', '@tuniao', 'tn-style');
+    fs.access(dependencyPath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.log('The @tuniao/tn-style dependency is not installed.');
+            return;
+        }
+        const htmlCompletionProvider = vscode_1.languages.registerCompletionItemProvider([{
+                language: 'pug', scheme: 'file'
+            }, {
+                language: 'jade', scheme: 'file'
+            }, {
+                language: 'vue', scheme: 'file',
+            }, {
+                language: 'html', scheme: 'file'
+            }], new ClassNameCompletionProvider(), '', ' ', ':', '<', '"', "'", '=');
+        context.subscriptions.push(htmlCompletionProvider);
+    });
 }
 exports.activate = activate;
-// 构造补全项提供器
 class ClassNameCompletionProvider {
     isCursorInsideClassAttribute(document, position) {
         const line = document.lineAt(position);

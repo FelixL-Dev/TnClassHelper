@@ -18,12 +18,6 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "tnclasshelp.helloWorld",
-        "title": "Hello World"
-      }
-    ],
     "completionItemProvider": [
       {
         "language": "html",
