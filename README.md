@@ -17,5 +17,3 @@ TnClassHelper是一款Visual Studio Code样式补全插件 为帮助使用Tuniao
 ```
 
 1.寻找Vscode 设置选项选,搜索editor.quickSuggestions,在strings选项选择为on
-
-![image-20230414181247216](/Users/lx/Library/Application Support/typora-user-images/image-20230414181247216.png)
