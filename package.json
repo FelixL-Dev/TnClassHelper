@@ -2,8 +2,8 @@
   "name": "tnclasshelper",
   "displayName": "TnClassHelper",
   "description": "VsCode中的TnUi样式提示插件",
-  "version": "0.0.1",
-  "publisher": "TnClassHelper",
+  "version": "1.0.0",
+  "publisher": "FelixLiang",
   "engines": {
     "vscode": "^1.77.0"
   },
