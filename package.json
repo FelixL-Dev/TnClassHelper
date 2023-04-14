@@ -3,13 +3,14 @@
   "displayName": "TnClassHelper",
   "description": "VsCode中的TnUi样式提示插件",
   "version": "0.0.1",
-  "publisher": "FelixLiang",
+  "publisher": "TnClassHelper",
   "engines": {
     "vscode": "^1.77.0"
   },
   "categories": [
     "Other"
   ],
+  "icon": "./static/vscode-class.png",
   "activationEvents": [
     "onLanguage:html",
     "onLanguage:vue",
@@ -36,6 +37,10 @@
         "triggerCharacters": ["\"", "'", " ", ":"]
       }
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FelixL-Dev/TnClassHelper.git"
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
