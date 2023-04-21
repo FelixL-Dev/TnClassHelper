@@ -1,9 +1,13 @@
 import { languages, ExtensionContext, CompletionItemProvider,
          TextDocument, Position, ProviderResult,
-         CompletionItem, CompletionList, CompletionItemKind, workspace }  from 'vscode'
-import { classNames } from './TnClassName'
+         CompletionItem, CompletionList, CompletionItemKind, workspace,MarkdownString }  from 'vscode'
+import { classNamesWithDetails } from './TnClassName'
 import * as fs from 'fs'
 import * as path from 'path'
+interface ClassNameWithDetails {
+  name: string
+  documentation: string
+}
 
 export function activate(context: ExtensionContext) {
   const rootPath = workspace.workspaceFolders ? workspace.workspaceFolders[0].uri.fsPath : ''
@@ -37,16 +41,44 @@ class ClassNameCompletionProvider implements CompletionItemProvider {
     const regex = /(?:\s|^)class\s*=\s*["'][^"']*$/i
     return regex.test(lineText)
   }
+
+  private getRandomEmoji(): string {
+    const emojiLibrary: string[] = [
+      "😀", "😁", "😂", "🤣", "😃", "😄", "😅", "😆", "😉", "😊",
+      "😋", "😎", "😍", "😘", "🥰", "😗", "😙", "😚", "🙂", "🙃",
+      "😇", "🥲", "😍", "🤩", "🤔", "🤨", "😐", "😑", "😶", "🙄",
+      "😏", "😣", "😥", "😮", "🥱", "😌", "😛", "😜", "😝", "🤤",
+    ];
+
+    const randomIndex = Math.floor(Math.random() * emojiLibrary.length);
+    return emojiLibrary[randomIndex];
+}
+
+
+  private processDocumentation(documentation: string): string {
+    const colorRegex = /(background-color|color):\s*([^;]+);/gi;
+    return documentation.replace(colorRegex, (match, property, value) => {
+      const emoji = this.getRandomEmoji();
+      return `${property}: ${emoji} ${value};`;
+    });
+  }
+
   provideCompletionItems(
     document: TextDocument,
     position: Position
   ): ProviderResult<CompletionItem[] | CompletionList> {
     if (!this.isCursorInsideClassAttribute(document, position)) {
-      return undefined
+      return undefined;
     }
-    const completionItems: CompletionItem[] = classNames.map(
-      className => new CompletionItem(className, CompletionItemKind.Snippet)
-    )
-    return completionItems
+  
+    const completionItems: CompletionItem[] = classNamesWithDetails.map(({ name, documentation }: ClassNameWithDetails) => {
+      const item = new CompletionItem(name, CompletionItemKind.Snippet);
+      const processedDocumentation = this.processDocumentation(documentation);
+      item.documentation = new MarkdownString(processedDocumentation);
+      return item;
+    });
+  
+    return completionItems;
   }
+  
 }
